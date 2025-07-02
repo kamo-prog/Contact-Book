@@ -36,4 +36,4 @@ Comprehensive error handling
 3. Use default key or implement your own API  
 
 ```bash
-git clone https://github.com/yourusername/contact-book.git
+git clone https://github.com/kamo-prog/contact-book.git
