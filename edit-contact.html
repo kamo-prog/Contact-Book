@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Edit contact</title>
+</head>
+<body onload = "getContact()">
+    <div id = "avatarImage"></div>
+    <form id = "editForm">
+        <label for ="firstname">First name</label>
+        <input type = "text" name ="firstname" id ="firstname" readonly><br/>
+        <label for ="lastname">last name</label>
+        <input type = "text" name ="lastname" id ="lastname" readonly><br/>
+        <label for = "mobile">Mobile</label>
+        <input type = "text" name ="mobile" id ="mobile" readonly><br/>
+        <label for = "email">Email</label>
+        <input type = "text" name = "email" id="email" readonly><br/>
+        <label for ="avatar" id = "avatarLabel" hidden >Change profile image</label><br/>
+        <input type="file" name ="avatar" id = "avatar" hidden><br/>
+        <br/>
+        <button type = "submit" id = "submitForm" hidden>Submit</button>
+    
+    </form>
+    <br/><br/>
+    <button id = "homeLink" type = "button">Home</button>
+    <button id = "editContact" type = "button">Edit</button>
+    <button id = "deleteContact" type = "button">Delete</button>
+    
+    <script src = "config.js"></script>
+    <script>
+
+        var id = getId();
+        document.getElementById("homeLink").addEventListener('click', homeLink)
+        document.getElementById("editContact").addEventListener('click', editContact)
+        document.getElementById("submitForm").addEventListener('click', submitForm)
+         document.getElementById("deleteContact").addEventListener('click', deleteContact)
+        //console.log("The id is :" + id);
+        //return the full url of the window open
+        function getId(){
+            var url = window.location.href;
+            var pos = url.search("=");
+            //remove the rest of the url and remain with id digit
+            var id = url.slice(pos +1);
+            return id;
+        }
+
+        function getContact(){
+            fetch(rootPath + 'controller/get-contacts/?id=' + id)
+            .then(function(response){
+                return response.json();
+            })
+            .then(function(data){
+                displayOutput(data);
+               // console.log(data);
+                //display contact info
+
+            })
+
+        }
+        function homeLink(){
+            window.open("index.html", "_self");
+        }
+
+        function displayOutput(data){
+            avatarImg = `
+                    <img src = "${rootPath}/controller/uploads/${data[0].avatar}" width="200"/>
+            
+            `
+            document.getElementById("avatarImage").innerHTML = avatarImg;
+            document.getElementById("firstname").value = data[0].firstname;
+            document.getElementById("lastname").value = data[0].lastname;
+            document.getElementById("mobile").value = data[0].mobile;
+            document.getElementById("email").value = data[0].email;
+        }
+
+        function editContact(){
+            document.getElementById("firstname").readOnly = false;
+            document.getElementById("lastname").readOnly = false;
+            document.getElementById("mobile").readOnly = false;
+            document.getElementById("email").readOnly = false;
+            document.getElementById("avatar").hidden = false;
+            document.getElementById("submitForm").hidden = false;
+        }
+
+        function submitForm(e){
+            e.preventDefault();
+
+            const form = new FormData(document.querySelector("#editForm"));
+            form.append('apiKey', apiKey);
+            form.append('id', id);
+
+            fetch(rootPath + 'controller/edit-contact/', {
+                method: 'POST',
+                header:{'Accept': 'application/json, *.*'},
+                body: form 
+            })
+                .then(function(response){
+                return response.text();
+            }) 
+                .then(function(data){
+                if(data == "1"){
+                    alert("Contact edited.");
+                    homeLink();
+                }else{
+                    alert(data);
+                    homeLink();
+                }
+            })
+        }
+
+            function deleteContact(){
+                var confirmDelete = confirm("Delete contact. Are you sure?");
+
+                if (confirmDelete == true){
+                    fetch(rootPath + 'controller/delete-contact/?id=' + id)
+                    .then(function(response){
+                        return response.text();
+                    })
+                    .then(function(data){
+                        if(data == "1"){
+                            homeLink();
+                        }else{
+                            alert(data);
+                        }
+                    })
+                }
+            }
+
+
+
+    </script>
+
+       <style>
+        :root {
+            --primary-color: #4a6fa5;
+            --secondary-color: #6b8cae;
+            --accent-color: #ff7e5f;
+            --danger-color: #e74c3c;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f7fa;
+            color: var(--dark-color);
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+        
+        #avatarImage {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        #avatarImage img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid white;
+            box-shadow: var(--box-shadow);
+        }
+        
+        #editForm {
+            background-color: white;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark-color);
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            transition: var(--transition);
+        }
+        
+        input[type="text"]:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(74, 111, 165, 0.2);
+        }
+        
+        input[type="text"][readonly] {
+            background-color: #f5f5f5;
+            color: #666;
+        }
+        
+        input[type="file"] {
+            width: 100%;
+            padding: 10px 0;
+        }
+        
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: var(--transition);
+            box-shadow: var(--box-shadow);
+        }
+        
+        #homeLink {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        
+        #homeLink:hover {
+            background-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+        
+        #editContact {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        #editContact:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+        
+        #deleteContact {
+            background-color: var(--danger-color);
+            color: white;
+        }
+        
+        #deleteContact:hover {
+            background-color: #c0392b;
+            transform: translateY(-2px);
+        }
+        
+        #submitForm {
+            background-color: var(--accent-color);
+            color: white;
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        #submitForm:hover {
+            background-color: #ff6a45;
+            transform: translateY(-2px);
+        }
+        
+        @media (max-width: 600px) {
+            .button-container {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+    
+</body>
+</html>

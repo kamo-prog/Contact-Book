@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Add contact</title>
+</head>
+<body>
+    <br/>
+    <form id = "editForm">
+        <label for ="firstname">First name</label>
+        <input type = "text" name ="firstname" id ="firstname"><br/>
+        <label for ="lastname">last name</label>
+        <input type = "text" name ="lastname" id ="lastname"><br/>
+        <label for = "mobile">Mobile</label>
+        <input type = "text" name ="mobile" id ="mobile"><br/>
+        <label for = "email">Email</label>
+        <input type = "text" name = "email" id="email"><br/>
+        <label for ="avatar">Select a file</label><br/>
+        <input type="file" name ="avatar" id = "avatar"><br/>
+        <button type = "submit" id = "submitForm">Submit</button>
+    <br/>
+    </form>
+    <br/>
+    <button id = "homeLink" type ="button">Home</button>
+
+    <script src = "config.js"></script>
+    <script>
+
+        document.getElementById("submitForm").addEventListener('click', submitForm);
+        document.getElementById("homeLink").addEventListener('click', homeLink);
+
+
+        //To avoid the form reloading
+        function submitForm(e){
+            e.preventDefault();
+            
+            const form = new FormData(document.querySelector('#editForm'));
+            form.append('apiKey', apiKey);
+
+            fetch(rootPath + 'controller/insert-contact/', {
+                method: 'POST',
+                header:{'Accept': 'application/json, *.*'},
+                body: form 
+            })
+            .then(function(response){
+                return response.text();
+            }) //For a pop up alert on the web
+            .then(function(data){
+                if(data == "1"){
+                    alert("Contact Added.");
+                    homeLink();
+                }else{
+                    alert(data);
+                    homeLink();
+                }
+            })
+
+
+        }
+        //built in Js function to open a new window, open in the same window 
+        function homeLink(){
+            window.open("index.html","_self");
+        }
+
+
+    </script>
+
+        <style>
+        :root {
+            --primary-color: #4a6fa5;
+            --secondary-color: #6b8cae;
+            --accent-color: #ff7e5f;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f7fa;
+            color: var(--dark-color);
+            line-height: 1.6;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+        
+        #editForm {
+            background-color: white;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark-color);
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            transition: var(--transition);
+        }
+        
+        input[type="text"]:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(74, 111, 165, 0.2);
+        }
+        
+        input[type="file"] {
+            width: 100%;
+            padding: 10px 0;
+        }
+        
+        #submitForm {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: var(--transition);
+            box-shadow: var(--box-shadow);
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        #submitForm:hover {
+            background-color: #ff6a45;
+            transform: translateY(-2px);
+        }
+        
+        #homeLink {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: var(--transition);
+            box-shadow: var(--box-shadow);
+            width: 100%;
+            text-align: center;
+            display: block;
+            text-decoration: none;
+        }
+        
+        #homeLink:hover {
+            background-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+        
+        .avatar-preview {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #eee;
+            margin: 10px auto;
+            display: block;
+        }
+        
+        @media (max-width: 600px) {
+            body {
+                padding: 15px;
+            }
+            
+            #editForm {
+                padding: 20px;
+            }
+        }
+    </style>
+    
+</body>
+</html>
